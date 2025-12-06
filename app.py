@@ -27,5 +27,25 @@ def career():
     <p>Full-Stack AI Engineer</p>
     """
 
+@app.route('/skills')
+def skills():
+    return """
+    <h1>💻 Skillvana Tech Skills Priority</h1>
+    <h2>Priority 1 (Learn NOW)</h2>
+    <ul>
+        <li>✅ Python + Flask (DONE!)</li>
+        <li>✅ Git + GitHub (DONE!)</li>
+        <li>HTML/CSS Basics</li>
+    </ul>
+    
+    <h2>Priority 2 (Next Month)</h2>
+    <ul>
+        <li>JavaScript + React</li>
+        <li>PostgreSQL Database</li>
+        <li>Docker Deployment</li>
+    </ul>
+    
+    <a href="/">← Home</a> | <a href="/career">Career</a>
+    """
 if __name__ == '__main__':
     app.run(debug=True)
