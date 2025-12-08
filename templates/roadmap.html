@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Your AI Roadmap - Skillvana{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <h2 class="text-center mb-4">🚀 Your Personalized AI Roadmap</h2>
+        <div class="roadmap p-4 bg-light rounded">
+            <h3 class="text-primary mb-3">for {interests} | {branch} Sem {semester}</h3>
+
+            {{ roadmap|safe }}
+        </div>
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-primary">← New Roadmap</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

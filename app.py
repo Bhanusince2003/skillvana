@@ -1,7 +1,8 @@
+from flask import Flask , render_template , request
 from dotenv import load_dotenv
 import os
-from flask import Flask
-from google import genai
+from google import genai  # ← ONLY THIS CHANGES
+
 
 load_dotenv()
 
@@ -10,9 +11,10 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route("/")
 def home():
-    return "<h1>Welcome to Skillvana AI Career App! 🚀</h1>"
+    return render_template("index.html") 
+
 
 @app.route('/career')
 def career():
@@ -56,31 +58,65 @@ def skills():
     
     <a href="/">← Home</a> | <a href="/career">Career</a>
     """
-@app.route('/test-gemini')
+@app.route("/test-gemini")
 def test_gemini():
-    prompt = """
-You are Skillvana's AI mentor for Indian ECE students.
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    response = model.generate_content("your prompt here")
+    return response.text
 
-Task: Create a 1‑month AI/ML roadmap.
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    if request.method == "POST":
+        branch = request.form["branch"]
+        semester = request.form["semester"]
+        interests = request.form["interests"]
+        prompt = f"""You are Skillvana AI Mentor for Indian engineering students.
 
-Output format (very strict):
-1. Use Markdown.
-2. Start with heading: ## 6-Month AI Roadmap
-3. Then give day by day steps(1-30).
-4. Under each step, add 2 bullet points explaining what to do that month.
-5. Keep every bullet short (max 15 words).
+Create EXACTLY this STRICT Markdown format for {branch} {semester}th sem student (Interests: {interests}):
 
-Student details:
-- Branch: ECE
-- Year: 2nd
-- Goal: AI engineer in 2 years.
-"""
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-    # show Markdown text as preformatted for now
-    return f"<pre>{response.text}</pre>"
+## 📅 6-Month {interests.title()} Roadmap
+
+### Month 1: Foundation
+- **Week 1:** Task 1
+- **Week 1:** Task 2  
+- **Week 1:** Task 3
+- **Week 2:** Task 1
+- **Week 2:** Task 2
+- **Week 2:** Task 3
+- **Week 3:** Task 1
+- **Week 3:** Task 2
+- **Week 3:** Task 3
+- **Week 4:** PROJECT: [name] + freeCodeCamp link
+
+### Month 2: Intermediate
+[... EXACT same pattern for 6 months]
+
+**REQUIREMENTS:**
+- Indian engineering college context
+- Free resources only (YouTube, freeCodeCamp, GeeksforGeeks)
+- Practical projects with GitHub links
+- Weekly 2-3 hours daily
+- USE ONLY ##, ###, -, **BOLD** formatting
+
+**RULES:**
+- ONLY ## ### - **BOLD** formatting
+- NO paragraphs or sentences
+- NO numbering 1.2.3 → use - bullets only
+- 3 tasks per week
+- Free resources ONLY
+- GitHub projects each month"""
+        
+        response = client.models.generate_content (  # ← YOUR GLOBAL CLIENT
+            model="gemini-2.5-flash",
+            contents=[{"role": "user", "parts": [{"text": prompt}]}],
+        )
+        roadmap = response.text
+        return render_template("roadmap.html", roadmap=roadmap, interest=interests, branch=branch, semester=semester)
+    
+    return render_template("profile.html")
+
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=5000)
