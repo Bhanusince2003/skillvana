@@ -1,7 +1,7 @@
 from flask import Flask , render_template , request
 from dotenv import load_dotenv
 import os
-from google import genai  # ← ONLY THIS CHANGES
+import google.generativeai as genai
 
 
 load_dotenv()
