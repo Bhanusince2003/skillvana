@@ -1,5 +1,5 @@
-echo flask > requirements.txt
-echo google-generativeai >> requirements.txt
-echo python-dotenv >> requirements.txt
-echo gunicorn >> requirements.txt
-echo waitress >> requirements.txt
+flask
+google-generativeai
+python-dotenv
+gunicorn
+waitress
