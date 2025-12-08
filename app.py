@@ -9,7 +9,6 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") 
 genai.configure(api_key=GEMINI_API_KEY)
 
-
 app = Flask(__name__)
 
 @app.route("/")
@@ -107,10 +106,10 @@ Create EXACTLY this STRICT Markdown format for {branch} {semester}th sem student
 - Free resources ONLY
 - GitHub projects each month"""
         
-        response = client.models.generate_content (  # ← YOUR GLOBAL CLIENT
-            model="gemini-2.5-flash",
-            contents=[{"role": "user", "parts": [{"text": prompt}]}],
-        )
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(prompt)
+
+        
         roadmap = response.text
         return render_template("roadmap.html", roadmap=roadmap, interest=interests, branch=branch, semester=semester)
     
